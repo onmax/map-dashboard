@@ -1,0 +1,180 @@
+**Product Requirements Document (PRD) — Nimiq Crypto Map: Business Dashboard & Outreach System**
+
+---
+
+### 1. Document Control
+
+| Field        | Value                                                  |
+| ------------ | ------------------------------------------------------ |
+| Author       | ChatGPT (Product draft for Nimiq team)                 |
+| Stakeholders | Core Dev Team, UX Lead, Growth Lead, Community Manager |
+| Version      | v0.1 (27 Jun 2025)                                     |
+| Status       | Draft                                                  |
+
+---
+
+### 2. Purpose
+
+Build a self‑service **Dashboard** that lets brick‑and‑mortar business owners claim or add their venue on map.nimiq.com, manage rich profile data, and declare the cryptocurrencies they accept. Complement this with an **Automated Outreach System** that surfaces high‑potential leads and contact details so the Growth team can accelerate merchant onboarding.
+
+---
+
+### 3. Background & Context
+
+- **map.nimiq.com** launched in Jan 2024 as an open, community‑maintained map of crypto‑friendly merchants.
+- Manual submissions limit scale and data freshness.
+- Google already hosts authoritative venue data. OAuth‑based access to the **Google Business Profile (GBP)** API allows owners to import that data in one click.
+- Automated research tools (Perplexity, Grok, Twitter Firehose) can surface promising prospects but need an internal funnel.
+
+---
+
+### 4. Goals & Success Metrics
+
+| Goal                       | Metric                                  | Target (6 months post‑launch) |
+| -------------------------- | --------------------------------------- | ----------------------------- |
+| Increase verified listings | # of claimed businesses                 | **+2 000**                    |
+| Improve data completeness  | Avg. profile completeness score         | **≥ 80 %**                    |
+| Boost user trust           | % listings marked accurate by community | **≥ 95 %**                    |
+| Outreach efficiency        | Leads converted / Leads contacted       | **≥ 15 %**                    |
+
+---
+
+### 5. Personas
+
+1. **Crypto‑Forward Owner** – runs a café, already accepts BTC/NIM, wants discovery.
+2. **Curious Merchant** – considering crypto payments, needs easy setup.
+3. **Growth Team Member** – uses dashboard to vet leads and trigger outreach.
+4. **End‑User Shopper** – searches map for places that take their coin.
+
+---
+
+### 6. User Stories (MVP)
+
+- *As a business owner*, I can sign in with my **Google account** so I don’t create yet another login.
+- *As a signed‑in owner*, I can **import** my Google Business Profile in one click, or **search** if I manage multiple locations.
+- *As an owner*, I can **edit** my profile (description, hours, images) and **add which cryptocurrencies** I accept so shoppers have accurate info.
+- *As a Growth team member*, I can see an **internal lead list** ranked by potential so I know whom to contact first.
+- *As a compliance officer*, I can see an audit trail showing **who edited what & when**.
+
+---
+
+### 7. Functional Requirements
+
+#### 7.1 Authentication & Authorization
+
+| ID     | Requirement                                                             | Priority |
+| ------ | ----------------------------------------------------------------------- | -------- |
+| AUTH‑1 | Support **Google OAuth 2.0 Sign‑In** (Email, Name, GBP scopes)          | Must     |
+| AUTH‑2 | Map Google account ↔ merchant record; allow multiple locations per user | Must     |
+| AUTH‑3 | Admin role for staff; read‑only mode for Growth users                   | Should   |
+
+#### 7.2 Business Profile Import & Management
+
+| ID    | Requirement                                                                                                                         | Priority |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| GBP‑1 | Fetch venue data via **Google Business Profile API**: name, address, coordinates, categories, hours, phone, website, photos, rating | Must     |
+| GBP‑2 | Provide **search & pick** flow if user manages multiple GBPs                                                                        | Must     |
+| GBP‑3 | Allow editing of supplemental fields: *crypto acceptance*, long description, social links                                           | Must     |
+| GBP‑4 | Write updates back to internal DB (not to Google) and tag timestamp + editor                                                        | Must     |
+| GBP‑5 | 24‑hour **sync job** to refresh ratings & hours from Google                                                                         | Should   |
+
+#### 7.3 Crypto Acceptance Module
+
+| ID       | Requirement                                                     | Priority |
+| -------- | --------------------------------------------------------------- | -------- |
+| CRYPTO‑1 | Multi‑select list of supported coins (BTC, NIM, ETH, SOL, etc.) | Must     |
+| CRYPTO‑2 | Option to paste *Lightning / Nimiq PayLink* for future POS flow | Could    |
+
+#### 7.4 Dashboard UX
+
+| ID   | Requirement                                                | Priority |
+| ---- | ---------------------------------------------------------- | -------- |
+| UI‑1 | Responsive, mobile‑first layout (70 % merchants use phone) | Must     |
+| UI‑2 | **Profile completeness meter** with inline tips            | Should   |
+| UI‑3 | Search bar with fuzzy match and category filters           | Must     |
+| UI‑4 | Map preview showing marker & cluster context               | Should   |
+
+#### 7.5 Automated Outreach System (Growth‑only views)
+
+| ID    | Requirement                                                                                                     | Priority |
+| ----- | --------------------------------------------------------------------------------------------------------------- | -------- |
+| OUT‑1 | **Lead collector** cron job: *Perplexity* queries, *Grok* streams, *Twitter* mentions (“we accept crypto here”) | Must     |
+| OUT‑2 | Normalize leads → candidate businesses with score (followers, sentiment, category)                              | Should   |
+| OUT‑3 | Attempt to auto‑fetch contact details (public email, X DM, website form)                                        | Should   |
+| OUT‑4 | Push high‑score leads into CRM (HubSpot) or CSV export                                                          | Could    |
+
+#### 7.6 Data Responsibility & Governance
+
+| ID    | Requirement                                                            | Priority |
+| ----- | ---------------------------------------------------------------------- | -------- |
+| GOV‑1 | Display disclaimer: “Owner is responsible for accuracy” before publish | Must     |
+| GOV‑2 | Log every change; keep **immutable history** for rollback              | Must     |
+| GOV‑3 | GDPR‑compliant data handling; allow deletion requests                  | Must     |
+
+---
+
+### 8. Non‑Functional Requirements
+
+| Category      | Requirement                                              |
+| ------------- | -------------------------------------------------------- |
+| Performance   | <300 ms P95 API latency (EU West)                        |
+| Availability  | 99.5 % monthly uptime                                    |
+| Security      | OAuth tokens encrypted at rest; OWASP top‑10 mitigations |
+| Scalability   | 100 k businesses, 10 k MAU owners                        |
+| Accessibility | WCAG 2.1 AA                                              |
+
+---
+
+### 9. Technical Architecture (Proposed)
+
+- **Frontend**: Vue 3 + Vite + Tailwind (reuse Crypto Map component lib)
+- **Backend**: Supabase (Postgres, Row‑Level Security, Edge Functions)
+- **Third‑Party APIs**: Google Business Profile, Twitter API v2, Perplexity Search API, Grok (X AI) via SSE
+- **Auth**: Supabase Auth with Google provider
+- **Jobs**: Cloudflare Workers (cron) for nightly GBP sync & lead ingest
+
+---
+
+### 10. Milestones & Timeline
+
+| Phase | Deliverable                                                | ETA             |
+| ----- | ---------------------------------------------------------- | --------------- |
+| 🟢 M0 | Tech spec & designs approved                               | **2 Jul 2025**  |
+| 🟢 M1 | Google OAuth + GBP import MVP (internal)                   | **4 Jul 2025**  |
+| 🟡 M2 | Profile editor + crypto module, initial outreach collector | **16 Jul 2025** |
+| 🟡 M3 | Public beta w/ 100 pilot merchants                         | **30 Jul 2025** |
+| ⬜ M4  | Outreach automation v1 + CRM push                          | **16 Aug 2025** |
+| ⬜ M5  | GA launch + marketing push                                 | **N/A**         |
+
+---
+
+### 11. Out‑of‑Scope (v1)
+
+- In‑dashboard payment processing or POS tools
+- Non‑Google SSO (Apple, X, etc.)
+- Writing updates back to GBP (will revisit if API quotas allow)
+
+---
+
+### 12. Risks & Mitigations
+
+| Risk                        | Likelihood | Impact | Mitigation                                        |
+| --------------------------- | ---------- | ------ | ------------------------------------------------- |
+| Google API quota limits     | Medium     | High   | Batch sync, cache, request higher quota early     |
+| Inaccurate outreach leads   | High       | Medium | Score + manual vet by Growth before contact       |
+| Spam or malicious edits     | Medium     | Medium | Rate‑limit writes, captcha, audit trail           |
+| Compliance with Twitter TOS | Medium     | Medium | Use official API; cache only IDs, not full tweets |
+
+---
+
+### 13. Open Questions
+
+1. Will Nimiq subsidize Google Places API fees or set hard daily cap?
+2. How many cryptocurrencies should we list out‑of‑the‑box vs. allow free‑text?
+3. Do we need multi‑language profile fields on day one?
+4. Preferred CRM (HubSpot vs. custom) for Outreach hand‑off?
+
+---
+
+
+
