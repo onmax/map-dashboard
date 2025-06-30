@@ -1,6 +1,6 @@
 export default defineNuxtPlugin(async () => {
   const { fetchSession } = useAuth()
   
-  // Initialize session on client-side
+  // Initialize session
   await fetchSession()
 })

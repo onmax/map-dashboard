@@ -34,3 +34,13 @@ export function serverAuth() {
   }
   return _auth
 }
+
+/**
+ * Get the current user and session from the server-side request
+ */
+export async function getServerSession(event: any) {
+  const auth = serverAuth()
+  return await auth.api.getSession({
+    headers: event.node.req.headers,
+  })
+}
