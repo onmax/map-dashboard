@@ -15,7 +15,7 @@ catalog:
   drizzle-orm: ^0.44.2
   eslint: ^9.29.0
   eslint-plugin-format: ^1.0.1
-  nuxt: ^4.0.0-alpha.3
+  nuxt: ^4.7.0
   nuxt-safe-runtime-config: 0.0.3
   typescript: ^5.8.3
   valibot: ^1.1.0
