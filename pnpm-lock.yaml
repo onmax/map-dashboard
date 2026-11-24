@@ -30,6 +30,9 @@ catalogs:
     '@nuxthub/core':
       specifier: ^0.9.0
       version: 0.9.0
+    '@valibot/to-json-schema':
+      specifier: ~1.8.0
+      version: 1.8.0
     better-auth:
       specifier: ^1.2.10
       version: 1.2.10
@@ -55,7 +58,7 @@ catalogs:
       specifier: ^5.8.3
       version: 5.8.3
     valibot:
-      specifier: ^1.2.0
+      specifier: ^1.5.0
       version: 1.5.0
     vue:
       specifier: ^3.5.17
@@ -99,7 +102,7 @@ importers:
         specifier: ^8.21.3
         version: 8.21.3(vue@3.5.17(typescript@5.8.3))
       '@valibot/to-json-schema':
-        specifier: ~1.8.0
+        specifier: 'catalog:'
         version: 1.8.0(valibot@1.5.0(typescript@5.8.3))
       '@vee-validate/zod':
         specifier: ^4.15.1

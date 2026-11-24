@@ -25,7 +25,7 @@
     "@nuxthub/core": "catalog:",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/vue-table": "^8.21.3",
-    "@valibot/to-json-schema": "~1.8.0",
+    "@valibot/to-json-schema": "catalog:",
     "@vee-validate/zod": "^4.15.1",
     "@vueuse/core": "^13.4.0",
     "better-auth": "catalog:",
