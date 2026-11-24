@@ -1,10 +1,9 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import { object, string } from 'valibot'
 import process from 'node:process'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
-  modules: ['@nuxthub/core', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/image', 'nuxt-safe-runtime-config', 'shadcn-nuxt'],
+  modules: ['@nuxthub/core', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/image', 'shadcn-nuxt'],
 
   devtools: { enabled: true },
 
@@ -17,19 +16,6 @@ export default defineNuxtConfig({
     public: {
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
     }
-  },
-
-  safeRuntimeConfig: {
-    $schema: object({
-      betterAuthSecret: string(),
-      google: object({
-        clientId: string(),
-        clientSecret: string(),
-      }),
-      public: object({
-        baseUrl: string(),
-      }),
-    }),
   },
 
   compatibilityDate: '2025-07-07',
